@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>Dankboard</title>
+  <title>Digitboard</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 
@@ -11,15 +11,17 @@
 
 
 
-  <h1>The dank board</h1>
+  <h1 class="header">Digitboard</h1>
 
-  <div>
-    <canvas height="300" width="300" class="whiteboard"></canvas>
+  <div class="whiteboard-container">
+    <canvas class="whiteboard"></canvas>
+    <button class="process-image-btn">Process image</button>
   </div>
 
 
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/main.js"></script>
 

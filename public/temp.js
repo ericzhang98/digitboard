@@ -22,8 +22,8 @@ for (var i = 0; i < colors.length; i++){
 
 //socket.on('drawing', onDrawingEvent);
 
-//window.addEventListener('resize', onResize, false);
-/onResize();
+window.addEventListener('resize', onResize, false);
+onResize();
 
 
 function drawLine(x0, y0, x1, y1, color, emit){

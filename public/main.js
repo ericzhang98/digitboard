@@ -1,122 +1,105 @@
 'use strict';
 
-/*
-var canvas = $("canvas.whiteboard");
-var canvasDOM = canvas[0];
-var context = canvasDOM.getContext("2d");
+const socket = io();
 
-canvasDOM.addEventListener("mousedown", onMouseDown, false);
-canvasDOM.addEventListener("mouseup", onMouseUp, false);
-canvasDOM.addEventListener("mousemove", throttle(onMouseMove, 10), false);
-var lastPoint = {};
-var color = "black";
-var drawing = false;
-
-
-function onMouseDown(event) {
-  drawing = true;
-  const offset = canvas.offset();
-  const x = event.pageX - offset.left;
-  const y = event.pageY - offset.top;
-  lastPoint = {x, y};
-}
-
-function onMouseUp(event) {
-  if (drawing) {
-    drawing = false;
-    const offset = canvas.offset();
-    const x = event.pageX - offset.left;
-    const y = event.pageY - offset.top;
-    drawLine(lastPoint.x, lastPoint.y, x, y, color, true);
-  }
-}
-
-function onMouseMove(event) {
-  if (drawing) {
-    console.log(canvas.offset());
-    const offset = canvas.offset();
-    const x = event.pageX - offset.left;
-    const y = event.pageY - offset.top;
-    drawLine(lastPoint.x, lastPoint.y, x, y, color, true);
-    lastPoint = {x, y};
-  }
-}
-
-
-function drawLine(x0, y0, x1, y1, color, emit) {
-  console.log(x0 + " " + y0 + " " + x1 + " " + y1);
-	context.beginPath();
-	context.moveTo(x0, y0);
-	context.lineTo(x1, y1);
-	context.strokeStyle = color;
-	context.lineWidth = 2;
-	context.stroke();
-	context.closePath();
-}
-*/
-
-
-var canvas = document.getElementsByClassName('whiteboard')[0];
-var colors = document.getElementsByClassName('color');
-var context = canvas.getContext('2d');
-
-var current = {
-	color: 'black'
+const button = document.getElementsByClassName("process-image-btn")[0];
+button.onclick = function() {
+  outputImage();
 };
-var drawing = false;
 
+const canvas = document.getElementsByClassName('whiteboard')[0];
+const context = canvas.getContext('2d');
 canvas.addEventListener('mousedown', onMouseDown, false);
 canvas.addEventListener('mouseup', onMouseUp, false);
 canvas.addEventListener('mouseout', onMouseUp, false);
 canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
-function onMouseDown(e){
+var current = {};
+var drawing = false;
+
+function onMouseDown(e) {
 	drawing = true;
-  const x = e.pageX - canvas.offsetLeft;
-  const y = e.pageY - canvas.offsetTop;
+  const x = e.pageX - canvas.offsetLeft - 5;
+  const y = e.pageY - canvas.offsetTop - 5;
 	current.x = x;
 	current.y = y;
 }
 
-function onMouseUp(e){
-	if (!drawing) { return; }
-	drawing = false;
-  const x = e.pageX - canvas.offsetLeft;
-  const y = e.pageY - canvas.offsetTop;
-	drawLine(current.x, current.y, x, y, current.color, true);
+function onMouseUp(e) {
+	if (drawing) {
+    drawing = false;
+    const x = e.pageX - canvas.offsetLeft - 5;
+    const y = e.pageY - canvas.offsetTop - 5;
+    drawLine(current.x, current.y, x, y, false);
+  }
 }
 
-function onMouseMove(e){
-	if (!drawing) { return; }
-  const x = e.pageX - canvas.offsetLeft;
-  const y = e.pageY - canvas.offsetTop;
-	drawLine(current.x, current.y, x, y, current.color, true);
-	current.x = x;
-	current.y = y;
+function onMouseMove(e) {
+  if (drawing) {
+    const x = e.pageX - canvas.offsetLeft - 5;
+    const y = e.pageY - canvas.offsetTop - 5;
+    drawLine(current.x, current.y, x, y, false);
+    current.x = x;
+    current.y = y;
+  }
+}
+
+const outputImage = throttle(function() {
+  const base64Data = canvas.toDataURL().split(",")[1];
+  console.log(base64Data);
+  uploadAndProcessImage(base64Data);
+}, 1000);
+
+function uploadAndProcessImage(base64Data) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "/process_image", true);
+  xhr.onreadystatechange = function(e) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      const response = JSON.parse(xhr.responseText);
+      console.log(response);
+      if (response.value) {
+        console.log(value);
+      }
+    }
+  };
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.send(JSON.stringify({data: base64Data}));
+  console.log("SENDING");
 }
 
 
 
-
-
-function drawLine(x0, y0, x1, y1, color, emit){
+function drawLine(x0, y0, x1, y1, emit) {
 	context.beginPath();
 	context.moveTo(x0, y0);
 	context.lineTo(x1, y1);
-	context.strokeStyle = color;
+	context.strokeStyle = "black";
 	context.lineWidth = 2;
 	context.stroke();
 	context.closePath();
+
+  if (emit) {
+    // emit drawing data in terms of percentage
+    var w = canvas.width;
+    var h = canvas.height;
+    socket.emit("drawing", {
+      x0: x0/w,
+      y0: y0/h,
+      x1: x1/w,
+      y1: y1/h
+    });
+  }
 }
 
+window.addEventListener('resize', onResize, false);
 onResize();
 function onResize() {
-  console.log(canvas.width);
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	canvas.width = canvas.clientWidth;
+	canvas.height = canvas.clientHeight;
+  context.fillStyle = "white";
+  context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// limit the number of events per second
 function throttle(callback, delay) {
 	var previousCall = new Date().getTime();
 	return function() {
@@ -127,4 +110,11 @@ function throttle(callback, delay) {
 			callback.apply(null, arguments);
 		}
 	};
+}
+
+socket.on('drawing', onDrawingEvent);
+function onDrawingEvent(data){
+	var w = canvas.width;
+	var h = canvas.height;
+	drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, false);
 }
