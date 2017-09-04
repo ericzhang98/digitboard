@@ -15,6 +15,9 @@ canvas.addEventListener('mousedown', onMouseDown, false);
 canvas.addEventListener('mouseup', onMouseUp, false);
 canvas.addEventListener('mouseout', onMouseUp, false);
 canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+canvas.addEventListener('touchstart', onTouchStart, false);
+canvas.addEventListener('touchend', onTouchEnd, false);
+canvas.addEventListener('touchmove', throttle(onTouchMove, 10), false);
 
 var current = {};
 var drawing = false;
@@ -44,6 +47,24 @@ function onMouseMove(e) {
     current.x = x;
     current.y = y;
   }
+}
+
+function onTouchStart(e) {
+  e.preventDefault();
+  onMouseDown(e);
+  return false;
+}
+
+function onTouchEnd(e) {
+  e.preventDefault();
+  onMouseUp(e);
+  return false;
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  onMouseMove(e);
+  return false;
 }
 
 const outputImage = throttle(function() {
@@ -94,7 +115,7 @@ function drawLine(x0, y0, x1, y1, emit) {
   }
 }
 
-window.addEventListener('resize', onResize, false);
+//window.addEventListener('resize', onResize, false);
 onResize();
 function onResize() {
 	canvas.width = canvas.clientWidth;
