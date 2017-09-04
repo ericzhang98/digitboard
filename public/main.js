@@ -7,6 +7,8 @@ button.onclick = function() {
   outputImage();
 };
 
+const label = document.getElementsByClassName("prediction-label")[0];
+
 const canvas = document.getElementsByClassName('whiteboard')[0];
 const context = canvas.getContext('2d');
 canvas.addEventListener('mousedown', onMouseDown, false);
@@ -57,8 +59,9 @@ function uploadAndProcessImage(base64Data) {
     if (xhr.readyState == 4 && xhr.status == 200) {
       const response = JSON.parse(xhr.responseText);
       console.log(response);
-      if (response.value) {
-        console.log(value);
+      if (response.prediction) {
+        label.innerHTML = "Digit prediction: " + response.prediction;
+        context.fillRect(0, 0, canvas.width, canvas.height); //clear canvas
       }
     }
   };

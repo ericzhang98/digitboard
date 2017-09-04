@@ -15,8 +15,8 @@ html, body {
 }
 
 .whiteboard {
-  height: 28px;
-  width: 28px;
+  height: 280px;
+  width: 280px;
   display: block;
   margin: 20px auto;
   border-style: solid;
@@ -26,4 +26,11 @@ html, body {
 .process-image-btn {
   display: block;
   margin: 20px auto;
+}
+
+.prediction-label {
+  width: 50%;
+  margin: auto;
+  text-align: center;
+  display: block;
 }
