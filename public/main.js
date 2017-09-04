@@ -4,10 +4,11 @@ const socket = io();
 
 const button = document.getElementsByClassName("process-image-btn")[0];
 button.onclick = function() {
-  outputImage();
+  clear();
 };
 
 const label = document.getElementsByClassName("prediction-label")[0];
+const img = document.getElementsByClassName("input-img")[0];
 
 const canvas = document.getElementsByClassName('whiteboard')[0];
 const context = canvas.getContext('2d');
@@ -36,6 +37,7 @@ function onMouseUp(e) {
     const x = e.pageX - canvas.offsetLeft - 5;
     const y = e.pageY - canvas.offsetTop - 5;
     drawLine(current.x, current.y, x, y, false);
+    makePrediction();
   }
 }
 
@@ -67,7 +69,8 @@ function onTouchMove(e) {
   return false;
 }
 
-const outputImage = throttle(function() {
+// throttled upload and process call
+const makePrediction = throttle(function() {
   const base64Data = canvas.toDataURL().split(",")[1];
   console.log(base64Data);
   uploadAndProcessImage(base64Data);
@@ -80,9 +83,15 @@ function uploadAndProcessImage(base64Data) {
     if (xhr.readyState == 4 && xhr.status == 200) {
       const response = JSON.parse(xhr.responseText);
       console.log(response);
-      if (response.prediction) {
+      if (response.prediction && response.prediction != -1) {
         label.innerHTML = "Digit prediction: " + response.prediction;
-        context.fillRect(0, 0, canvas.width, canvas.height); //clear canvas
+      }
+      else {
+        label.innerHTML = "Digit prediction: none";
+      }
+      if (response.inputImg) {
+        const inputImgData = "data:image/png;base64," + response.inputImg;
+        img.src = inputImgData;
       }
     }
   };
@@ -92,6 +101,9 @@ function uploadAndProcessImage(base64Data) {
 }
 
 
+function clear() {
+  context.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 function drawLine(x0, y0, x1, y1, emit) {
 	context.beginPath();

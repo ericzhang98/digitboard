@@ -34,3 +34,14 @@ html, body {
   text-align: center;
   display: block;
 }
+
+.input-image-label {
+  margin: 15px auto;
+  display: block;
+  text-align: center;
+}
+
+.input-img {
+  margin: 15px auto;
+  display: block;
+}

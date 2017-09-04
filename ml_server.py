@@ -131,11 +131,11 @@ def offset(img, start, reverse, axis):
         img = numpy.rot90(img, 2, (0,1)) #flip if inverse
         
     for x in range(start, img.shape[0]):
-        if numpy.sum(img[x]) >= 3*255:
+        if numpy.sum(img[x]) >= 2*255:
             return x
     return -1
 
-# centers all images according to offset, thresholded by 3*255 to be considered part of digit
+# centers all images according to offset, thresholded by 2*255 to be considered part of digit
 def center(img):
     # center vertically
     top = offset(img, 0, False, 0)
@@ -180,7 +180,7 @@ class Handler(BaseHTTPRequestHandler):
 	downsampled_arr = downsample(grayscale_arr)
         centered_arr = center(downsampled_arr)
 
-        misc.toimage(centered_arr).show()
+        #misc.toimage(centered_arr).show()
 
 	prediction = process_2Darr(centered_arr)
 	print "prediction:", prediction
@@ -188,7 +188,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.end_headers()
-        self.wfile.write(prediction)
+        self.wfile.write(json.dumps({"prediction": prediction, "inputImg":
+            numpyArrayToBase64(centered_arr)}))
 
 
 def run(port=6969):

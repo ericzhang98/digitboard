@@ -24,13 +24,13 @@ app.get("/", function(req, res) {
 
 
 app.post("/process_image", function(req, res) {
-  const data = req.body.data;
-  if (!data) {
+  const image = req.body.data;
+  if (!image) {
     return res.send({});
   }
   console.log("processing image...");
-  processImage(data, function(prediction) {
-    res.send({prediction: prediction});
+  processImage(image, function(predictionData) {
+    res.send({prediction: predictionData.prediction, inputImg: predictionData.inputImg});
   });
 });
 
@@ -42,7 +42,7 @@ function processImage(image, callback) {
       data: image 
     }
   }, function(err, res, body) {
-    console.log("prediction:", body);
+    console.log("prediction:", body.prediction);
     if (callback) {
       callback(body);
     }
