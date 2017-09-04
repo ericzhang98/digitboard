@@ -7,7 +7,7 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
 from keras.datasets import mnist
 from keras.callbacks import ModelCheckpoint
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import base64
 from scipy import misc, ndimage
 from cStringIO import StringIO
