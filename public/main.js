@@ -74,7 +74,7 @@ const makePrediction = throttle(function() {
   const base64Data = canvas.toDataURL().split(",")[1];
   console.log(base64Data);
   uploadAndProcessImage(base64Data);
-}, 1000);
+}, 100);
 
 function uploadAndProcessImage(base64Data) {
   const xhr = new XMLHttpRequest();
