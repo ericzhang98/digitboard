@@ -30,7 +30,12 @@ app.post("/process_image", function(req, res) {
   }
   console.log("processing image...");
   processImage(image, function(predictionData) {
-    res.send({prediction: predictionData.prediction, inputImg: predictionData.inputImg});
+    if (predictionData) {
+      res.send({prediction: predictionData.prediction, inputImg: predictionData.inputImg});
+    }
+    else {
+      res.send({prediction: -2});
+    }
   });
 });
 
@@ -42,7 +47,7 @@ function processImage(image, callback) {
       data: image 
     }
   }, function(err, res, body) {
-    console.log("prediction:", body.prediction);
+    //console.log("prediction:", body.prediction);
     if (callback) {
       callback(body);
     }

@@ -84,7 +84,12 @@ function uploadAndProcessImage(base64Data) {
       const response = JSON.parse(xhr.responseText);
       console.log(response);
       if (response.prediction != null && response.prediction != -1) {
-        label.innerHTML = "Digit prediction: " + response.prediction;
+        if (response.prediction != -2) {
+          label.innerHTML = "Digit prediction: " + response.prediction;
+        }
+        else {
+          label.innerHTML = "Backend still starting up lol";
+        }
       }
       else {
         label.innerHTML = "Digit prediction: none";
