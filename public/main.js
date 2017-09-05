@@ -83,7 +83,7 @@ function uploadAndProcessImage(base64Data) {
     if (xhr.readyState == 4 && xhr.status == 200) {
       const response = JSON.parse(xhr.responseText);
       console.log(response);
-      if (response.prediction && response.prediction != -1) {
+      if (response.prediction != null && response.prediction != -1) {
         label.innerHTML = "Digit prediction: " + response.prediction;
       }
       else {
