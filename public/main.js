@@ -88,7 +88,7 @@ function uploadAndProcessImage(base64Data) {
           label.innerHTML = "Digit prediction: " + response.prediction;
         }
         else {
-          label.innerHTML = "Backend still starting up lol";
+          label.innerHTML = "Backend still starting up lol (wait like 10 sec)";
         }
       }
       else {
