@@ -1,7 +1,5 @@
 'use strict';
-
-const socket = io();
-
+const socket = io(); 
 const button = document.getElementsByClassName("process-image-btn")[0];
 button.onclick = function() {
   clear();
@@ -23,6 +21,7 @@ canvas.addEventListener('touchmove', throttle(onTouchMove, 10), false);
 var current = {};
 var drawing = false;
 
+// event listeners
 function onMouseDown(e) {
 	drawing = true;
   const x = e.pageX - canvas.offsetLeft - 5;
@@ -76,6 +75,7 @@ const makePrediction = throttle(function() {
   uploadAndProcessImage(base64Data);
 }, 100);
 
+// server prediction call
 function uploadAndProcessImage(base64Data) {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "/process_image", true);
@@ -108,6 +108,8 @@ function uploadAndProcessImage(base64Data) {
 
 function clear() {
   context.fillRect(0, 0, canvas.width, canvas.height);
+  label.innerHTML = "Digit prediction: ";
+  img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 }
 
 function drawLine(x0, y0, x1, y1, emit) {
@@ -132,15 +134,16 @@ function drawLine(x0, y0, x1, y1, emit) {
   }
 }
 
-//window.addEventListener('resize', onResize, false);
-onResize();
-function onResize() {
+//window.addEventListener('resize', setup, false);
+setup();
+function setup() {
 	canvas.width = canvas.clientWidth;
 	canvas.height = canvas.clientHeight;
   context.fillStyle = "white";
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+// return function with a delay check
 function throttle(callback, delay) {
 	var previousCall = new Date().getTime();
 	return function() {
@@ -153,6 +156,7 @@ function throttle(callback, delay) {
 	};
 }
 
+// respond to drawing changes
 socket.on('drawing', onDrawingEvent);
 function onDrawingEvent(data){
 	var w = canvas.width;
