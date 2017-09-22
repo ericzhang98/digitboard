@@ -42,7 +42,8 @@ model.add(Dropout(0.5))
 model.add(Dense(10, activation="softmax"))
 
 # add best weights from before
-model.load_weights("model_weights_final.hdf5")
+#model.load_weights("model_weights_final.hdf5")
+model.load_weights("rotate_weights_new.hdf5")
 
 # compile the model
 model.compile(loss="categorical_crossentropy", optimizer="adam",
