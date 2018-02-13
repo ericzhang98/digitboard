@@ -3,6 +3,7 @@
 Simple digit recognizer using model trained on MNIST.
 
 Check it out at [https://intense-coast-89920.herokuapp.com](https://intense-coast-89920.herokuapp.com)
+May take a while to load since it's a free heroku dyno and needs to wake up.
 
 To run:
 npm start (runs server.js in foreground and ml_server.py in background, make sure to kill -9 ml_server.py if u want to restart)
